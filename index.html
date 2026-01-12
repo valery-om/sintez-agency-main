@@ -7,12 +7,28 @@
     <title>SINTEZ AGENCY | Digital-маркетинг</title>
     <style>
         :root {
+            /* Dark Theme (Default) */
             --bg: #0f0f12;
             --text-main: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.6);
             --orange: #FF8F00;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            --toggle-bg: rgba(255, 255, 255, 0.1);
+            --progress-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg: #f4f4f6;
+            --text-main: #1a1a1a;
+            --text-muted: rgba(0, 0, 0, 0.6);
+            --glass: rgba(255, 255, 255, 0.7);
+            --border: rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            --toggle-bg: rgba(0, 0, 0, 0.1);
+            --progress-bg: rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -28,6 +44,7 @@
             text-align: center;
             overflow: hidden;
             position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Ambient Glow */
@@ -57,7 +74,7 @@
             letter-spacing: 2px;
             margin-bottom: 20px;
             display: inline-block;
-            background: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0.7));
+            background: linear-gradient(45deg, var(--text-main), var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -73,7 +90,53 @@
             font-size: 18px;
             line-height: 1.6;
             color: var(--text-muted);
-            margin: 0 0 40px 0;
+            margin: 0 0 30px 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 40px auto;
+            text-align: left;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--progress-bg);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 75%;
+            background: var(--orange);
+            border-radius: 3px;
+            position: relative;
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
         }
 
         .card {
@@ -86,10 +149,11 @@
             display: inline-flex;
             flex-direction: column;
             gap: 15px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--card-shadow);
             width: 100%;
             box-sizing: border-box;
             max-width: 400px;
+            transition: all 0.3s ease;
         }
 
         .btn {
@@ -100,13 +164,17 @@
             font-weight: 600;
             font-size: 16px;
             transition: all 0.3s ease;
+            cursor: pointer;
             border: 1px solid transparent;
         }
 
+        /* Primary Button (Dental) */
         .btn-primary {
             background: var(--orange);
             color: white;
             box-shadow: 0 4px 15px rgba(255, 143, 0, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover {
@@ -122,7 +190,7 @@
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--toggle-bg);
             border-color: var(--text-muted);
         }
 
@@ -133,6 +201,66 @@
             opacity: 0.5;
         }
 
+        /* Toggle Switch */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 28px;
+            position: relative;
+            width: 52px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: var(--toggle-bg);
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--border);
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 3px;
+            content: "";
+            height: 20px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 20px;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--orange);
+            border-color: var(--orange);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        .toggle-icon {
+            font-size: 18px;
+            margin: 0 8px;
+            opacity: 0.7;
+        }
+
         @media (max-width: 480px) {
             h1 {
                 font-size: 32px;
@@ -141,16 +269,42 @@
             p {
                 font-size: 16px;
             }
+
+            .theme-switch-wrapper {
+                top: 15px;
+                right: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Theme Toggle -->
+    <div class="theme-switch-wrapper">
+        <span class="toggle-icon">☀️</span>
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <span class="toggle-icon">🌙</span>
+    </div>
+
     <div class="container">
         <div class="logo">SINTEZ AGENCY</div>
         <h1>Создаем цифровые экосистемы</h1>
         <p>Основной сайт находится в разработке.<br>Мы уже работаем со стоматологиями.</p>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Готовность сайта</span>
+                <span>75%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
 
         <div class="card">
             <a href="https://dental.sintez.agency" class="btn btn-primary">
@@ -165,6 +319,69 @@
             2026 © SINTEZ Agency
         </div>
     </div>
+
+    <script>
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        } else {
+            // Default to dark
+            toggleSwitch.checked = true;
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                document.documentElement.removeAttribute('data-theme'); // Our default CSS is dark, data-theme='light' overrides
+                // Correction: In our CSS, root is dark. light is [data-theme='light'].
+                // So checked (moon) = dark = no attribute or specific dark attribute?
+                // Wait, logic check:
+                // CSS: :root {} (Dark). [data-theme="light"] {} (Light).
+                // Toggle: Unchecked (Sun side?) -> Light? 
+                // Let's align with main site: Unchecked = Sun (Light), Checked = Moon (Dark).
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Revised Logic matching CSS
+        // :root is Dark. 
+        // [data-theme="light"] is Light.
+        // Toggle: Checked = Moon. Unchecked = Sun.
+
+        // If checked (Dark mode requested): Remove data-theme="light"
+        // If unchecked (Light mode requested): Add data-theme="light"
+
+        toggleSwitch.addEventListener('change', function (e) {
+            if (e.target.checked) {
+                // Moon side -> Dark
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // Sun side -> Light
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Initialize
+        // If saved 'light', uncheck box and set attr.
+        // If saved 'dark' or null, check box and remove attr.
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            toggleSwitch.checked = false;
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            toggleSwitch.checked = true;
+        }
+    </script>
 
 </body>
 
