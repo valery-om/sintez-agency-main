@@ -93,49 +93,70 @@
             margin: 0 0 30px 0;
         }
 
-        /* Progress Bar */
+        /* Progress Bar Enhanced */
         .progress-container {
             width: 100%;
             max-width: 300px;
             margin: 0 auto 40px auto;
             text-align: left;
+            position: relative;
         }
 
         .progress-label {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .progress-bar {
-            height: 6px;
-            background: var(--progress-bg);
-            border-radius: 3px;
+            height: 8px;
+            /* Slightly thicker for effect */
+            background: rgba(255, 255, 255, 0.05);
+            /* Subtle track */
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            /* Glass container for the bar */
+            backdrop-filter: blur(5px);
         }
 
         .progress-fill {
             height: 100%;
-            width: 75%;
-            background: var(--orange);
-            border-radius: 3px;
+            width: 0%;
+            /* Start at 0 for animation */
+            background: linear-gradient(90deg, var(--orange), #ffb74d);
+            border-radius: 10px;
             position: relative;
-            animation: shimmer 2s infinite linear;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+            /* Smooth eased animation */
+            box-shadow: 0 0 10px rgba(255, 143, 0, 0.5);
+            /* Glow effect */
+        }
+
+        /* Shimmer effect overlay */
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            transform: translateX(-100%);
+            animation: shimmer 2s infinite;
         }
 
         @keyframes shimmer {
-            0% {
-                opacity: 0.8;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
             100% {
-                opacity: 0.8;
+                transform: translateX(100%);
             }
         }
 
@@ -263,21 +284,21 @@
         }
 
         /* Checked State (Moon/Dark) logic reversed here?
-           Wait. Main site: 
-           Unchecked (default or light?) -> Logic says: 
-           Main site logic: 
+           Wait. Main site:
+           Unchecked (default or light?) -> Logic says:
+           Main site logic:
            if (savedLang === 'en') { checked = true }
            Theme toggle logic wasn't fully visible in snippets, but typically:
            Unchecked = Left Side. Checked = Right Side.
            If Sun is Left and Moon is Right:
            Unchecked = Sun (Light).
            Checked = Moon (Dark).
-           
+
            Let's look at the toggle container:
            <span class="toggle-icon">☀️</span>
            <switch>
            <span class="toggle-icon">🌙</span>
-           
+
            So Left Icon is Sun. Right Icon is Moon.
            Slider starts Left (Unchecked) -> Sun -> Light.
            Slider moves Right (Checked) -> Moon -> Dark.
@@ -323,6 +344,15 @@
         [data-theme="light"] .toggle-slider:before {
             background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .since-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 50px;
         }
 
         @media (max-width: 480px) {
@@ -396,7 +426,7 @@
                 <span>65%</span>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: 65%;"></div>
+                <div class="progress-fill" id="pb-fill"></div>
             </div>
         </div>
 
@@ -412,12 +442,23 @@
             </a>
         </div>
 
+        <div class="since-text">
+            Создаем цифровые экосистемы и стратегии с 2018 года
+        </div>
+
         <div class="footer">
             2026 © SINTEZ Agency
         </div>
     </div>
 
     <script>
+        // Animate Progress Bar on Load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('pb-fill').style.width = '65%';
+            }, 300); // Slight delay for smooth visual entry
+        });
+
         const toggleSwitch = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
