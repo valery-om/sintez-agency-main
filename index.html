@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SINTEZ AGENCY | Digital-маркетинг</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     <style>
         :root {
             /* Dark Theme (Default) */
@@ -368,10 +369,17 @@
             .theme-switch-wrapper {
                 top: 15px;
                 right: 15px;
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end;
             }
 
             .toggle-icon {
                 font-size: 16px;
+            }
+
+            .toggle-label {
+                font-size: 12px;
             }
 
             .toggle-switch {
@@ -395,8 +403,20 @@
 
 <body>
 
-    <!-- Theme Toggle (Positioned Absolute) -->
-    <div class="theme-switch-wrapper">
+    <!-- Controls Wrapper (Theme + Lang) -->
+    <div class="theme-switch-wrapper" style="display: flex; gap: 20px;">
+
+        <!-- Language Toggle -->
+        <div class="toggle-container">
+            <span class="toggle-label">RU</span>
+            <label class="toggle-switch" aria-label="Toggle language">
+                <input type="checkbox" id="lang-toggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">EN</span>
+        </div>
+
+        <!-- Theme Toggle -->
         <div class="toggle-container">
             <span class="toggle-icon">☀️</span>
             <label class="toggle-switch" aria-label="Toggle theme">
@@ -409,21 +429,21 @@
 
     <div class="container">
 
-        <div
-            style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; margin-bottom: 10px;">
+        <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; margin-bottom: 10px;"
+            data-i18n="agency_label">
             Маркетинговое агентство
         </div>
         <div class="logo">
             <span style="color: var(--orange)">sintez</span>.agency
         </div>
 
-        <h1>Сайт в разработке</h1>
-        <p>Мы создаём что-то особенное!<br>Совсем скоро здесь появится новый сайт.</p>
+        <h1 data-i18n="h1_title">Сайт в разработке</h1>
+        <p data-i18n="subtitle">Мы создаём что-то особенное!<br>Совсем скоро здесь появится новый сайт.</p>
 
         <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-label">
-                <span>Прогресс разработки</span>
+                <span data-i18n="progress_label">Прогресс разработки</span>
                 <span>65%</span>
             </div>
             <div class="progress-bar">
@@ -435,15 +455,15 @@
             <!-- Keeping the requested functional link -->
             <a href="https://dental.sintez.agency" class="btn btn-secondary"
                 style="margin-bottom: 15px; border-color: var(--orange); color: var(--text-main);">
-                🦷 Перейти на сайт для стоматологий
+                <span data-i18n="btn_dental">🦷 Перейти на сайт для стоматологий</span>
             </a>
 
             <a href="https://t.me/sintez_agency" target="_blank" class="btn btn-primary">
-                💬 Написать в Telegram
+                <span data-i18n="btn_telegram">💬 Написать в Telegram</span>
             </a>
         </div>
 
-        <div class="since-text">
+        <div class="since-text" data-i18n="since_text">
             Создаем цифровые экосистемы и стратегии с 2018 года
         </div>
 
@@ -453,53 +473,119 @@
     </div>
 
     <script>
+        // --- Translations ---
+        const translations = {
+            ru: {
+                agency_label: "Маркетинговое агентство",
+                h1_title: "Сайт в разработке",
+                subtitle: "Мы создаём что-то особенное!<br>Совсем скоро здесь появится новый сайт.",
+                progress_label: "Прогресс разработки",
+                btn_dental: "🦷 Перейти на сайт для стоматологий",
+                btn_telegram: "💬 Написать в Telegram",
+                since_text: "Создаем цифровые экосистемы и стратегии с 2018 года"
+            },
+            en: {
+                agency_label: "Marketing Agency",
+                h1_title: "Website Under Construction",
+                subtitle: "We are creating something special!<br>A new site will launch here very soon.",
+                progress_label: "Development Progress",
+                btn_dental: "🦷 Go to Dental Marketing Site",
+                btn_telegram: "💬 Contact via Telegram",
+                since_text: "Creating digital ecosystems and strategies since 2018"
+            }
+        };
+
+        // --- Logic ---
+        const langToggle = document.getElementById('lang-toggle');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Helper: Apply Translations
+        function translatePage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            document.documentElement.lang = lang;
+        }
+
+        // --- Language Init ---
+        // Check local storage or browser default
+        let savedLang = localStorage.getItem('language');
+        if (!savedLang) {
+            // Default to RU if not set
+            savedLang = 'ru';
+        }
+
+        // State: Unchecked (Left) = RU. Checked (Right) = EN.
+        if (savedLang === 'en') {
+            langToggle.checked = true;
+            translatePage('en');
+        } else {
+            langToggle.checked = false;
+            translatePage('ru');
+        }
+
+        // Language Listener
+        langToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                // Right -> EN
+                localStorage.setItem('language', 'en');
+                translatePage('en');
+            } else {
+                // Left -> RU
+                localStorage.setItem('language', 'ru');
+                translatePage('ru');
+            }
+        });
+
+
+        // --- Theme Init ---
+        // State: Unchecked (Left) = Sun/Light. Checked (Right) = Moon/Dark.
+        // NOTE: Previous logic might have been: Checked=Dark. let's stick to that.
+        // Actually, in CSS :root is DARK. 
+        // So we want:
+        // Dark Mode (Default) -> Checkbox Checked (Moon icon active)
+        // Light Mode -> Checkbox Unchecked (Sun icon active)
+
+        const savedTheme = localStorage.getItem('theme');
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.checked = false; // Sun
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.checked = true; // Moon
+            }
+        }
+
+        if (savedTheme === 'light') {
+            setTheme('light');
+        } else {
+            setTheme('dark'); // Default
+        }
+
+        themeToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                // Checked -> Dark/Moon
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // Unchecked -> Light/Sun
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
         // Animate Progress Bar on Load
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('pb-fill').style.width = '65%';
-            }, 300); // Slight delay for smooth visual entry
-        });
-
-        const toggleSwitch = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        // Logic Review:
-        // Left (Unchecked) = Sun = Light Mode.
-        // Right (Checked) = Moon = Dark Mode.
-        // Default CSS (:root) = Dark variables.
-
-        function setLightMode() {
-            document.documentElement.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            toggleSwitch.checked = false; // Slider Left (Sun)
-        }
-
-        function setDarkMode() {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-            toggleSwitch.checked = true; // Slider Right (Moon)
-        }
-
-        // Initialize based on storage
-        if (currentTheme === 'light') {
-            setLightMode();
-        } else {
-            // Default to dark
-            setDarkMode();
-        }
-
-        // Listener
-        toggleSwitch.addEventListener('change', function (e) {
-            if (e.target.checked) {
-                // User clicked to check -> Wants Moon/Dark
-                setDarkMode();
-            } else {
-                // User clicked to uncheck -> Wants Sun/Light
-                setLightMode();
-            }
+            }, 300);
         });
     </script>
-
 </body>
 
 </html>
